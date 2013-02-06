@@ -51,7 +51,7 @@ return array(
 
 # Configuration and use
 
-With the above configuration in place you're set to go. All URLs you create with
+With the above configuration in place you're all set to go. All URLs you create with
 any `createUrl()` and `createAbsoluteUrl()` method will contain the current application
 language code in their URL. If you want to create a link for a user to switch to
 another language you can supply a `language` parameter:
