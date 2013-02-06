@@ -34,7 +34,7 @@ return array(
         ),
         'request' => array(
             'class'     => 'ext.localeurls.LocaleHttpRequest',
-            'languages' => array('en','de','fr'),
+            'languages' => array('en_us','en','de','fr'),
 
             // Advanced configuration with defaults (see below)
             //'persistLanguage'         => true,
@@ -45,6 +45,9 @@ return array(
     ),
 );
 ```
+
+> **NOTE**: You need to configure all available languages. More specific
+> languages should come first, e.g. `en_us` before `en` above.
 
 # Configuration and use
 

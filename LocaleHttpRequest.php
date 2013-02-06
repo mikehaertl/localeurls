@@ -17,14 +17,14 @@
  * or the language specified (string).
  *
  * @author Michael Härtl <haertl.mike@gmail.com>
- * @version 1.0.0-dev
+ * @version 1.0.0
  */
 class LocaleHttpRequest extends CHttpRequest
 {
     const LANGUAGE_KEY = '__language';
 
     /**
-     * @var array list of available language codes
+     * @var array list of available language codes. More specific patterns first, e.g. 'en_us', 'en', ...
      */
     public $languages = array();
 
@@ -73,10 +73,14 @@ class LocaleHttpRequest extends CHttpRequest
 
             } else {
 
-                $language = Yii::app()->user->getState(self::LANGUAGE_KEY);
+                if($this->persistLanguage) {
+                    $language = Yii::app()->user->getState(self::LANGUAGE_KEY);
 
-                if($language===null)
-                    $language = $this->getCookies()->itemAt(self::LANGUAGE_KEY);
+                    if($language===null)
+                        $language = $this->getCookies()->itemAt(self::LANGUAGE_KEY);
+                } else {
+                    $language = null;
+                }
 
                 if($language===null) {
                     if(!$this->defaultLanguage)
