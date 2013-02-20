@@ -12,12 +12,12 @@
  * cookie. If a user enters any page without a language code in the URL
  * then he's redirected to his stored language version - if available.
  *
- * If a new user enters the site and $defaultLanguage is true or contains
- * a language code, he's redirected to the application language page (true)
- * or the language specified (string).
+ * If a new user enters the site and $redirectDefault is true the user
+ * is redirected to the URL with the default language of the aplication
+ * as configured in the application configuration.
  *
  * @author Michael Härtl <haertl.mike@gmail.com>
- * @version 1.0.0
+ * @version 1.1.0
  */
 class LocaleHttpRequest extends CHttpRequest
 {
@@ -39,15 +39,27 @@ class LocaleHttpRequest extends CHttpRequest
     public $languageCookieLifetime = 31536000;
 
     /**
-     * @var mixed if the URL contains no language and this is not false, then the user is redirected
-     * either to the application language (true) or to the language specified (string)
+     * @var bool wether to redirect to the default language URL if no language specified
      */
-    public $defaultLanguage = false;
+    public $redirectDefault = false;
 
     /**
      * @var string pathInfo with language key removed
      */
     protected $_cleanPathInfo;
+
+    /**
+     * @var string language as configured in main application config
+     */
+    protected $_defaultLanguage;
+
+    /**
+     * @return string the language code that was configured in the main application configuration
+     */
+    public function getDefaultLanguage()
+    {
+        return $this->_defaultLanguage===null ? Yii::app()->language : $this->_defaultLanguage;
+    }
 
     public function getPathInfo()
     {
@@ -82,15 +94,14 @@ class LocaleHttpRequest extends CHttpRequest
                     $language = null;
                 }
 
+                $this->_defaultLanguage = Yii::app()->language;
+
                 if($language===null) {
-                    if(!$this->defaultLanguage)
+                    if(!$this->redirectDefault)
                         return $this->_cleanPathInfo;
                     else
-                        $language = $this->defaultLanguage===true ? Yii::app()->language : $this->defaultLanguage;
+                        $language = $this->_defaultLanguage;
                 }
-
-                if(!in_array($language, $this->languages))
-                    throw new CException("Auto-detected language '$language' is not configured.");
 
                 if(($baseUrl = $this->getBaseUrl())==='') {
                     $this->redirect('/'.$language.$this->getRequestUri());

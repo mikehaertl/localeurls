@@ -29,7 +29,7 @@
  * NOTE: This class only works if urlFormat is 'path'.
  *
  * @author Michael Härtl <haertl.mike@gmail.com>
- * @version 1.0.0
+ * @version 1.1.0
  */
 class LocaleUrlManager extends CUrlManager
 {
@@ -56,6 +56,11 @@ class LocaleUrlManager extends CUrlManager
         }
 
         $url = parent::createUrl($route, $params, $ampersand);
+
+        $request = Yii::app()->request;
+
+        if(!$request->redirectDefault && $language===$request->getDefaultLanguage())
+            return $url;
 
         if(($baseUrl=$this->getBaseUrl())==='') {
             return '/'.$language.$url;

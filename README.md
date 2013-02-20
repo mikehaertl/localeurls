@@ -39,7 +39,7 @@ return array(
             // Advanced configuration with defaults (see below)
             //'persistLanguage'         => true,
             //'languageCookieLifetime'  => 31536000,
-            //'defaultLanguage'         => false,
+            //'redirectDefault'         => false,
         ),
         // ...
     ),
@@ -49,12 +49,18 @@ return array(
 > **NOTE**: You need to configure all available languages. More specific
 > languages should come first, e.g. `en_us` before `en` above.
 
-# Configuration and use
+# Mode of operation
 
 With the above configuration in place you're all set to go. All URLs you create with
 any `createUrl()` and `createAbsoluteUrl()` method will contain the current application
-language code in their URL. If you want to create a link for a user to switch to
-another language you can supply a `language` parameter:
+language code in their URL.
+
+If a request comes in that has no language set, nothing will happen. The application
+will use the language you defined in your `main.php`. If you want a redirect to the
+URL with your default language in this case, then configure `redirectDefault` to `true`.
+
+To switch to another language, you can create URLs with the usual methods and add a
+`language` parameter there:
 
 
 ```php
@@ -62,19 +68,48 @@ another language you can supply a `language` parameter:
 $germanUrl = $this->createUrl('site/contact', array('language' => 'de'));
 ```
 
-You can change this parameter name in the `$languageParam` option of `LocaleUrlManager`.
-
-If a request comes in that has no language set, nothing will happen. The application
-will use the language you defined in your `main.php`. If you always want to enforce a
-redirect e.g. from `http://www.example.com` to `http://www.example.com/de` then
-you can set `$defaultLanguage` to `de` or to `true` to redirect to the application
-language.
-
-Once a user visited a URL with a language code, this language is stored in his
+Once a user visited a URL with a language code in it, this language is stored in his
 session. If the user returns to the start page (or any other page) without a language
 in the URL, he's automatically redirected to his last language choice.
 
-You can disable this feature if you set `$persistLanguage` to `false` in the `request`
-component. If you want to disable the cookie and only use session as storage then you
-can set the `$languageCookieLifetime` to `false`.
+# API
 
+## LocaleHttpRequest
+
+### Properties
+
+ *  `languageCookieLifeTime`: How long to store the user language in a cookie.
+    Default is 1 year. Set to false to disable cookie storage.
+ *  `languages`: Array of available language codes. More specific patterns must come
+    first, i.e. `en_us` must be listed before `en`.
+ *  `persistLanguage`: Wether to store the user language selection in session and cookie.
+    If the user returns to any page without a language in the URL, he's redirected to the
+    stored language's URL. Default is `true`.
+ *  `redirectDefault`: Wether to also redirect the application's default language, i.e.
+    from `www.example.com` to `www.example.com/en` if the main application language is `en`.
+    Default is false.
+
+### Methods
+
+ *  `getDefaultLanguage()`: Returns the default language as it was configured in the main
+    application configuration
+
+## LocaleUrlManager
+
+### Properties
+
+ *  `languageParam` : Name of the parameter that contains the desired language when
+    constructing a URL. Default is `language`.
+
+### Methods
+
+This class adds no new methods.
+
+
+# Upgrade
+
+## From 1.0.0
+
+*   The parameter `defaultLanguage` was removed. You should configure the default
+    language in your main application config instead. If you want to redirect to
+    your default language, you can set `redirectDefault` to true.
