@@ -1,0 +1,17 @@
+{
+    "name": "mikehaertl/localeurls",
+    "description": "localeurls is a Yii extension for automatic locale/language management through URLs.",
+    "keywords": ["yii","locale","language","url"],
+    "homepage": "https://github.com/mikehaertl/localeurls",
+    "type": "yii-extension",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Michael Haertl",
+            "email": "haertl.mike@gmail.com"
+        }
+    ],
+    "require": {
+        "php": ">=5.0.0"
+    }
+}

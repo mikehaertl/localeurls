@@ -17,7 +17,7 @@
  * as configured in the application configuration.
  *
  * @author Michael Härtl <haertl.mike@gmail.com>
- * @version 1.1.0
+ * @version 1.1.1
  */
 class LocaleHttpRequest extends CHttpRequest
 {
@@ -54,11 +54,20 @@ class LocaleHttpRequest extends CHttpRequest
     protected $_defaultLanguage;
 
     /**
+     * Save default language
+     */
+    public function init()
+    {
+        $this->_defaultLanguage = Yii::app()->language;
+        parent::init();
+    }
+
+    /**
      * @return string the language code that was configured in the main application configuration
      */
     public function getDefaultLanguage()
     {
-        return $this->_defaultLanguage===null ? Yii::app()->language : $this->_defaultLanguage;
+        return $this->_defaultLanguage;
     }
 
     public function getPathInfo()
@@ -71,17 +80,21 @@ class LocaleHttpRequest extends CHttpRequest
             if(preg_match("#^($pattern)(/?)#", $this->_cleanPathInfo, $m)) {
 
                 $this->_cleanPathInfo = strtr($this->_cleanPathInfo, array($m[1].$m[2] => ''));
-                Yii::app()->language = $m[1];
+                $language = $m[1];
+                Yii::app()->language = $language;
 
                 if($this->persistLanguage) {
-                    Yii::app()->user->setState(self::LANGUAGE_KEY, $m[1]);
+                    Yii::app()->user->setState(self::LANGUAGE_KEY, $language);
                     $cookies = $this->cookies;
                     if($this->languageCookieLifetime) {
-                        $cookie = new CHttpCookie(self::LANGUAGE_KEY, $m[1]);
+                        $cookie = new CHttpCookie(self::LANGUAGE_KEY, $language);
                         $cookie->expire = time() + $this->languageCookieLifetime;
                         $cookies->add(self::LANGUAGE_KEY, $cookie);
                     }
                 }
+
+                if(!$this->redirectDefault && $language===$this->getDefaultLanguage())
+                    $this->redirect($this->getBaseUrl().'/'.$this->_cleanPathInfo);
 
             } else {
 
@@ -94,9 +107,7 @@ class LocaleHttpRequest extends CHttpRequest
                     $language = null;
                 }
 
-                $this->_defaultLanguage = Yii::app()->language;
-
-                if($language===null) {
+                if($language===null || $language===$this->_defaultLanguage) {
                     if(!$this->redirectDefault)
                         return $this->_cleanPathInfo;
                     else
