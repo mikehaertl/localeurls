@@ -105,6 +105,45 @@ in the URL, he's automatically redirected to his last language choice.
 
 This class adds no new methods.
 
+# How to switch languages
+
+Here's a simple example how you can create a language selector widget. It creates
+a dropdown taylored towards the popular Bootstrap framework.
+
+```php
+<?php
+class LanguageSelector extends CWidget
+{
+    public function run()
+    {
+        $app            = Yii::app();
+        $controllerId   = $app->controller->id;
+        $actionId       = $app->controller->action->id;
+        $params         = $_GET;
+        $languages      = $app->request->languages;
+        $language       = $app->language;
+
+        echo CHtml::link($language. ' <b class="caret"></b>', '#', array(
+            'class'         => 'dropdown-toggle',
+            'data-toggle'   => 'dropdown'
+        ));
+
+        array_unshift($params, "$controllerId/$actionId");
+
+        echo '<ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu">';
+        foreach($languages as $lang)
+        {
+            if($lang===$language)
+                continue;
+
+            $params['language'] = $lang;
+
+            echo '<li>'.CHtml::link($lang,$params ).'</li>';
+        }
+        echo '</ul>';
+    }
+}
+```
 
 # Upgrade
 
