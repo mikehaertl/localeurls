@@ -37,8 +37,9 @@ return array(
             'languages' => array('en_us','en','de','fr'),
 
             // Advanced configuration with defaults (see below)
-            //'persistLanguage'         => true,
+            //'detecLanguage'           => true,
             //'languageCookieLifetime'  => 31536000,
+            //'persistLanguage'         => true,
             //'redirectDefault'         => false,
         ),
         // ...
@@ -46,21 +47,27 @@ return array(
 );
 ```
 
-> **NOTE**: You need to configure all available languages. More specific
-> languages should come first, e.g. `en_us` before `en` above.
+> **NOTE**: You need to configure all available languages including the
+> default language of your application. More specific language codes should
+> come first, e.g. `en_us` before `en` above.
 
 # Mode of operation
 
-With the above configuration in place you're all set to go. All URLs you create with
-any `createUrl()` and `createAbsoluteUrl()` method will contain the current application
-language code in their URL.
+With the above configuration in place you're all set to go. If a request comes in
+that has no language set, the component will try to auto detect the language from
+the HTTP headers and redirect to that URL, for example to `www.example.com/fr`. If
+`fr` is the default language of your application (i.e. what you configured in
+your `main.php`), it will not redirect - unless you set `redirectDefault`
+to `true`. In this case you can't access `www.example.com` anymore because you're
+always redirected to a specific language URL even for the default application language.
 
-If a request comes in that has no language set, nothing will happen. The application
-will use the language you defined in your `main.php`. If you want a redirect to the
-URL with your default language in this case, then configure `redirectDefault` to `true`.
+All URLs you create with any `createUrl()` and `createAbsoluteUrl()` method will
+also contain the current visitor's language in their URL. The same rules apply for
+the default language: Unless you set `redirectDefault` to `true`, the URLs you create
+will not contain a language code if the visitor uses the default language.
 
-To switch to another language, you can create URLs with the usual methods and add a
-`language` parameter there:
+To let your users switch to another language, you can create URLs with the usual methods
+and add a `language` parameter there:
 
 
 ```php
@@ -70,7 +77,8 @@ $germanUrl = $this->createUrl('site/contact', array('language' => 'de'));
 
 Once a user visited a URL with a language code in it, this language is stored in his
 session. If the user returns to the start page (or any other page) without a language
-in the URL, he's automatically redirected to his last language choice.
+in the URL, he's automatically redirected to his last language choice. See below for
+a useful widget that creates a simple language selector.
 
 # API
 
@@ -78,10 +86,13 @@ in the URL, he's automatically redirected to his last language choice.
 
 ### Properties
 
+ *  `detectLanguage`: Wether to auto detect the preferred user language from
+    the HTTP headers. Default is `true`.
  *  `languageCookieLifeTime`: How long to store the user language in a cookie.
-    Default is 1 year. Set to false to disable cookie storage.
+    Default is 1 year. Set to `false` to disable cookie storage.
  *  `languages`: Array of available language codes. More specific patterns must come
-    first, i.e. `en_us` must be listed before `en`.
+    first, i.e. `en_us` must be listed before `en`. The default language from the
+    application configuration must also be listed here.
  *  `persistLanguage`: Wether to store the user language selection in session and cookie.
     If the user returns to any page without a language in the URL, he's redirected to the
     stored language's URL. Default is `true`.

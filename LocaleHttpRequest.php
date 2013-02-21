@@ -8,20 +8,29 @@
  * sets it as application language if found. The available languages
  * have to be configured in $languages.
  *
- * By default the language is also stored to the user session and to a
+ * If no language is found in the URL it tries to auto detect the
+ * preferred language from the HTTP headers. This can be disabled
+ * through the $detectLanguage parameter.
+ *
+ * By default the found language is stored in the user session and in a
  * cookie. If a user enters any page without a language code in the URL
- * then he's redirected to his stored language version - if available.
+ * he gets redirected to the same page but in his preferred language.
  *
  * If a new user enters the site and $redirectDefault is true the user
  * is redirected to the URL with the default language of the aplication
  * as configured in the application configuration.
  *
  * @author Michael Härtl <haertl.mike@gmail.com>
- * @version 1.1.1
+ * @version 1.1.2
  */
 class LocaleHttpRequest extends CHttpRequest
 {
     const LANGUAGE_KEY = '__language';
+
+    /**
+     * @var bool wether to automatically detect the preferred language from the browser settings
+     */
+    public $detectLanguage = true;
 
     /**
      * @var array list of available language codes. More specific patterns first, e.g. 'en_us', 'en', ...
@@ -29,14 +38,14 @@ class LocaleHttpRequest extends CHttpRequest
     public $languages = array();
 
     /**
-     * @var bool wether to store language selection in session and (optionally) in cookie
-     */
-    public $persistLanguage = true;
-
-    /**
      * @var int language cookie lifetime in seconds. Default is 1 year. Set to false to disable cookie.
      */
     public $languageCookieLifetime = 31536000;
+
+    /**
+     * @var bool wether to store language selection in session and (optionally) in cookie
+     */
+    public $persistLanguage = true;
 
     /**
      * @var bool wether to redirect to the default language URL if no language specified
@@ -98,13 +107,21 @@ class LocaleHttpRequest extends CHttpRequest
 
             } else {
 
+                $language = null;
+
                 if($this->persistLanguage) {
                     $language = Yii::app()->user->getState(self::LANGUAGE_KEY);
 
                     if($language===null)
                         $language = $this->getCookies()->itemAt(self::LANGUAGE_KEY);
-                } else {
-                    $language = null;
+                }
+
+                if($language===null && $this->detectLanguage) {
+                    foreach($this->preferredLanguages as $preferred)
+                        if(in_array($preferred, $this->languages)) {
+                            $language = $preferred;
+                            break;
+                        }
                 }
 
                 if($language===null || $language===$this->_defaultLanguage) {
