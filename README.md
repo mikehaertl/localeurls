@@ -58,8 +58,11 @@ that has no language set, the component will try to auto detect the language fro
 the HTTP headers and redirect to that URL, for example to `www.example.com/fr`. If
 `fr` is the default language of your application (i.e. what you configured in
 your `main.php`), it will not redirect - unless you set `redirectDefault`
-to `true`. In this case you can't access `www.example.com` anymore because you're
-always redirected to a specific language URL even for the default application language.
+to `true`.
+
+> **NOTE**: If `redirectDefault` is enabled you can't access `www.example.com` anymore
+> because you're always redirected to a specific language URL even for the default
+> application language.
 
 All URLs you create with any `createUrl()` and `createAbsoluteUrl()` method will
 also contain the current visitor's language in their URL. The same rules apply for
@@ -68,7 +71,6 @@ will not contain a language code if the visitor uses the default language.
 
 To let your users switch to another language, you can create URLs with the usual methods
 and add a `language` parameter there:
-
 
 ```php
 <?php
