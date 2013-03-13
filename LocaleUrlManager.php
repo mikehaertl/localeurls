@@ -29,7 +29,7 @@
  * NOTE: This class only works if urlFormat is 'path'.
  *
  * @author Michael Härtl <haertl.mike@gmail.com>
- * @version 1.1.2
+ * @version 1.1.3
  */
 class LocaleUrlManager extends CUrlManager
 {
@@ -61,6 +61,10 @@ class LocaleUrlManager extends CUrlManager
 
         if(!$request->redirectDefault && $language===$request->getDefaultLanguage())
             return $url;
+
+        $key = array_search($language, $request->languages);
+        if(is_string($key))
+            $language = $key;
 
         if(($baseUrl=$this->getBaseUrl())==='') {
             return '/'.$language.$url;

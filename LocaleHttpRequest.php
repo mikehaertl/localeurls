@@ -21,7 +21,7 @@
  * as configured in the application configuration.
  *
  * @author Michael Härtl <haertl.mike@gmail.com>
- * @version 1.1.2
+ * @version 1.1.3
  */
 class LocaleHttpRequest extends CHttpRequest
 {
@@ -33,7 +33,8 @@ class LocaleHttpRequest extends CHttpRequest
     public $detectLanguage = true;
 
     /**
-     * @var array list of available language codes. More specific patterns first, e.g. 'en_us', 'en', ...
+     * @var array list of available language codes. More specific patterns first, e.g. 'en_us', 'en'.
+     * This can also contain key/value items of the form "<url_name>"=>"<language", e.g. 'english'=>'en'
      */
     public $languages = array();
 
@@ -84,13 +85,19 @@ class LocaleHttpRequest extends CHttpRequest
         if($this->_cleanPathInfo===null)
         {
             $this->_cleanPathInfo = parent::getPathInfo();
-            $pattern = implode('|',$this->languages);
 
-            if(preg_match("#^($pattern)(/?)#", $this->_cleanPathInfo, $m)) {
+            $languages = array();
+            foreach($this->languages as $k=>$v)
+                $languages[] = is_string($k) ? $k : $v;
+            $pattern = implode('|', $languages);
+
+            if(preg_match("#^($pattern)\b(/?)#", $this->_cleanPathInfo, $m)) {
 
                 $this->_cleanPathInfo = strtr($this->_cleanPathInfo, array($m[1].$m[2] => ''));
                 $language = $m[1];
                 Yii::app()->language = $language;
+
+                YII_DEBUG && Yii::trace("Detected language '$language'",'ext.localeurls');
 
                 if($this->persistLanguage) {
                     Yii::app()->user->setState(self::LANGUAGE_KEY, $language);

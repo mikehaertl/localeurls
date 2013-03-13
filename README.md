@@ -10,6 +10,11 @@ This extension allows to use URLs that contain a language code like
     http://www.example.com/en/some/page
     http://www.example.com/de/some/page
 
+Since 1.1.3 you can also configure friendlier language names if you want:
+
+    http://www.example.com/english/some/page
+    http://www.example.com/deutsch/some/page
+
 The language code is automatically inserted into every URL created and
 read back on every request. No extra URL rules are required. For best
 user experience the language is also restored from session/cookie if the
@@ -35,6 +40,13 @@ return array(
         'request' => array(
             'class'     => 'ext.localeurls.LocaleHttpRequest',
             'languages' => array('en_us','en','de','fr'),
+
+            // Since version 1.1.3 you can also map url => language
+            // 'languages' => array(
+            //      'english'   => 'en',
+            //      'deutsch'   => 'de',
+            //      'fr',
+            //  )
 
             // Advanced configuration with defaults (see below)
             //'detecLanguage'           => true,
@@ -94,7 +106,8 @@ a useful widget that creates a simple language selector.
     Default is 1 year. Set to `false` to disable cookie storage.
  *  `languages`: Array of available language codes. More specific patterns must come
     first, i.e. `en_us` must be listed before `en`. The default language from the
-    application configuration must also be listed here.
+    application configuration must also be listed here. Since 1.1.3 you can also map
+    URL values to languages: `array('de','fr','english'=>'en')`.
  *  `persistLanguage`: Wether to store the user language selection in session and cookie.
     If the user returns to any page without a language in the URL, he's redirected to the
     stored language's URL. Default is `true`.
@@ -158,9 +171,16 @@ class LanguageSelector extends CWidget
 }
 ```
 
+# Changelog
+
+### 1.1.3
+
+*   Add mapping feature.
+*   Add debug output under category `ext.localeurls` (only if `YII_DEBUG` is set)
+
 # Upgrade
 
-## From 1.0.0
+### From 1.0.0
 
 *   The parameter `defaultLanguage` was removed. You should configure the default
     language in your main application config instead. If you want to redirect to
