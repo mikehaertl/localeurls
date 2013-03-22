@@ -21,7 +21,7 @@
  * as configured in the application configuration.
  *
  * @author Michael Härtl <haertl.mike@gmail.com>
- * @version 1.1.3
+ * @version 1.1.4
  */
 class LocaleHttpRequest extends CHttpRequest
 {

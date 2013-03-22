@@ -118,7 +118,7 @@ a useful widget that creates a simple language selector.
 ### Methods
 
  *  `getDefaultLanguage()`: Returns the default language as it was configured in the main
-    application configuration
+    application configuration before it was overwritten during language detection
 
 ## LocaleUrlManager
 
@@ -126,10 +126,6 @@ a useful widget that creates a simple language selector.
 
  *  `languageParam` : Name of the parameter that contains the desired language when
     constructing a URL. Default is `language`.
-
-### Methods
-
-This class adds no new methods.
 
 # How to switch languages
 
@@ -142,19 +138,18 @@ class LanguageSelector extends CWidget
 {
     public function run()
     {
-        $app            = Yii::app();
-        $controllerId   = $app->controller->id;
-        $actionId       = $app->controller->action->id;
-        $params         = $_GET;
-        $languages      = $app->request->languages;
-        $language       = $app->language;
+        $app        = Yii::app();
+        $route      = $app->controller->route;
+        $languages  = $app->request->languages;
+        $language   = $app->language;
+        $params     = $_GET;
 
         echo CHtml::link($language. ' <b class="caret"></b>', '#', array(
             'class'         => 'dropdown-toggle',
             'data-toggle'   => 'dropdown'
         ));
 
-        array_unshift($params, "$controllerId/$actionId");
+        array_unshift($params, $route);
 
         echo '<ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu">';
         foreach($languages as $lang)
@@ -172,6 +167,10 @@ class LanguageSelector extends CWidget
 ```
 
 # Changelog
+
+### 1.1.4
+
+*   Fix #10: Could not create URL to switch to default language
 
 ### 1.1.3
 
