@@ -21,7 +21,7 @@
  * as configured in the application configuration.
  *
  * @author Michael Härtl <haertl.mike@gmail.com>
- * @version 1.1.4
+ * @version 1.1.5
  */
 class LocaleHttpRequest extends CHttpRequest
 {
@@ -109,8 +109,14 @@ class LocaleHttpRequest extends CHttpRequest
                     }
                 }
 
-                if(!$this->redirectDefault && $language===$this->getDefaultLanguage())
-                    $this->redirect($this->getBaseUrl().'/'.$this->_cleanPathInfo);
+                if(!$this->redirectDefault && $language===$this->getDefaultLanguage()) {
+                    $url            = $this->getBaseUrl().'/'.$this->_cleanPathInfo;
+                    $queryString    = $this->getQueryString();
+                    if(!empty($queryString))
+                        $url .= '?'.$queryString;
+
+                    $this->redirect($url);
+                }
 
             } else {
 

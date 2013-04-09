@@ -168,9 +168,13 @@ class LanguageSelector extends CWidget
 
 # Changelog
 
+### 1.1.5
+
+*   Fix #4: Query parameters lost when switching to default language
+
 ### 1.1.4
 
-*   Fix #10: Could not create URL to switch to default language
+*   Fix #3: Could not create URL to switch to default language
 
 ### 1.1.3
 
