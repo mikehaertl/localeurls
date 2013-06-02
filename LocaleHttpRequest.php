@@ -93,7 +93,7 @@ class LocaleHttpRequest extends CHttpRequest
 
             if(preg_match("#^($pattern)\b(/?)#", $this->_cleanPathInfo, $m)) {
 
-                $this->_cleanPathInfo = strtr($this->_cleanPathInfo, array($m[1].$m[2] => ''));
+                $this->_cleanPathInfo = substr($this->_cleanPathInfo, strlen($m[1].$m[2]));
                 $language = $m[1];
                 Yii::app()->language = $language;
 
