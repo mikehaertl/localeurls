@@ -29,7 +29,7 @@
  * NOTE: This class only works if urlFormat is 'path'.
  *
  * @author Michael Härtl <haertl.mike@gmail.com>
- * @version 1.1.5
+ * @version 1.1.6
  */
 class LocaleUrlManager extends CUrlManager
 {
