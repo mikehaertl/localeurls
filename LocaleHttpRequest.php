@@ -21,7 +21,7 @@
  * as configured in the application configuration.
  *
  * @author Michael Härtl <haertl.mike@gmail.com>
- * @version 1.1.6
+ * @version 1.1.7
  */
 class LocaleHttpRequest extends CHttpRequest
 {
@@ -94,7 +94,7 @@ class LocaleHttpRequest extends CHttpRequest
             if(preg_match("#^($pattern)\b(/?)#", $this->_cleanPathInfo, $m)) {
 
                 $this->_cleanPathInfo = substr($this->_cleanPathInfo, strlen($m[1].$m[2]));
-                $language = $m[1];
+                $language = isset($this->languages[$m[1]]) ? $this->languages[$m[1]] : $m[1];
                 Yii::app()->language = $language;
 
                 YII_DEBUG && Yii::trace("Detected language '$language'",'ext.localeurls');
@@ -142,6 +142,11 @@ class LocaleHttpRequest extends CHttpRequest
                         return $this->_cleanPathInfo;
                     else
                         $language = $this->_defaultLanguage;
+                }
+
+                $key = array_search($language, $this->languages);
+                if ($key && is_string($key)) {
+                    $language = $key;
                 }
 
                 if(($baseUrl = $this->getBaseUrl())==='') {
